@@ -1,6 +1,6 @@
 const mqtt = require('mqtt');
 
-const broker = 'mqtt://3.7.47.131:1883';
+const broker = 'mqtt://65.2.150.105:1883';
 const options = {
   username: 'Sarayu',
   password: 'IOTteam@123'
@@ -17,14 +17,12 @@ companies.forEach(company => {
 
 // Initialize state for each topic
 const topicState = {};
-const STEP = 5;          // How much to increase or decrease per cycle
-const MIN = 0;
-const MAX = 100;
+const MIN = 1;
+const MAX = 99;
 
 topics.forEach(topic => {
   topicState[topic] = {
-    value: MIN,
-    increasing: true
+    value: MIN
   };
 });
 
@@ -37,19 +35,10 @@ client.on('connect', () => {
     topics.forEach(topic => {
       const state = topicState[topic];
 
-      // Update value based on direction
-      if (state.increasing) {
-        state.value += STEP;
-        if (state.value >= MAX) {
-          state.value = MAX;
-          state.increasing = false;
-        }
-      } else {
-        state.value -= STEP;
-        if (state.value <= MIN) {
-          state.value = MIN;
-          state.increasing = true;
-        }
+      // Increase value
+      state.value += 1;
+      if (state.value > MAX) {
+        state.value = MIN; // Reset to MIN when exceeding MAX
       }
 
       const payload = state.value.toString();
