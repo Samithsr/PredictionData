@@ -15,17 +15,6 @@ companies.forEach(company => {
   }
 });
 
-// Initialize state for each topic
-const topicState = {};
-const MIN = 1;
-const MAX = 99;
-
-topics.forEach(topic => {
-  topicState[topic] = {
-    value: MIN
-  };
-});
-
 const client = mqtt.connect(broker, options);
 
 client.on('connect', () => {
@@ -33,15 +22,7 @@ client.on('connect', () => {
 
   setInterval(() => {
     topics.forEach(topic => {
-      const state = topicState[topic];
-
-      // Increase value
-      state.value += 1;
-      if (state.value > MAX) {
-        state.value = MIN; // Reset to MIN when exceeding MAX
-      }
-
-      const payload = state.value.toString();
+      const payload = Math.floor(Math.random() * 100).toString();
       client.publish(topic, payload, { qos: 0 }, (err) => {
         if (err) {
           console.error(`Error publishing to ${topic}:`, err);
@@ -50,7 +31,7 @@ client.on('connect', () => {
         }
       });
     });
-  }, 30000); // Every 30 seconds
+  }, 30000);
 });
 
 client.on('error', (err) => {
