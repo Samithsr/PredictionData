@@ -15,6 +15,19 @@ companies.forEach(company => {
   }
 });
 
+// Initialize state for each topic
+const topicState = {};
+const STEP = 5;          // How much to increase or decrease per cycle
+const MIN = 0;
+const MAX = 100;
+
+topics.forEach(topic => {
+  topicState[topic] = {
+    value: MIN,
+    increasing: true
+  };
+});
+
 const client = mqtt.connect(broker, options);
 
 client.on('connect', () => {
@@ -22,7 +35,24 @@ client.on('connect', () => {
 
   setInterval(() => {
     topics.forEach(topic => {
-      const payload = Math.floor(Math.random() * 100).toString();
+      const state = topicState[topic];
+
+      // Update value based on direction
+      if (state.increasing) {
+        state.value += STEP;
+        if (state.value >= MAX) {
+          state.value = MAX;
+          state.increasing = false;
+        }
+      } else {
+        state.value -= STEP;
+        if (state.value <= MIN) {
+          state.value = MIN;
+          state.increasing = true;
+        }
+      }
+
+      const payload = state.value.toString();
       client.publish(topic, payload, { qos: 0 }, (err) => {
         if (err) {
           console.error(`Error publishing to ${topic}:`, err);
@@ -31,7 +61,7 @@ client.on('connect', () => {
         }
       });
     });
-  }, 30000);
+  }, 30000); // Every 30 seconds
 });
 
 client.on('error', (err) => {
