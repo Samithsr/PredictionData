@@ -1,6 +1,6 @@
 const mqtt = require('mqtt');
 
-const broker = 'mqtt://65.2.150.105:1883';
+const broker = 'mqtt://13.233.73.61:1883';
 const options = {
   username: 'Sarayu',
   password: 'IOTteam@123'
