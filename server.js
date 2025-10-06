@@ -16,13 +16,14 @@ companies.forEach(company => {
 });
 
 const client = mqtt.connect(broker, options);
+let counter = 1;
 
 client.on('connect', () => {
   console.log('Connected to MQTT broker');
 
   setInterval(() => {
     topics.forEach(topic => {
-      const payload = Math.floor(Math.random() * 100).toString();
+      const payload = counter.toString();
       client.publish(topic, payload, { qos: 0 }, (err) => {
         if (err) {
           console.error(`Error publishing to ${topic}:`, err);
@@ -31,6 +32,7 @@ client.on('connect', () => {
         }
       });
     });
+    counter = (counter % 99) + 1; // Increment counter and reset to 1 after 99
   }, 10000);
 });
 
